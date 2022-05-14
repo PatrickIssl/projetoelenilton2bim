@@ -107,7 +107,9 @@ class _HomeState extends State<Home> {
                           children: [
 
                             SizedBox(height: height*0.04,),
-                            ElevatedButton(onPressed: ()=>{}, style: ButtonStyle(
+                            ElevatedButton(onPressed: ()=>{
+                              Navigator.pushNamed(context, '/extract')
+                            }, style: ButtonStyle(
                                 foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
                                 backgroundColor: MaterialStateProperty.all<Color>(Color(verdeForte)),
                                 shape: MaterialStateProperty.all<RoundedRectangleBorder>(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rifasonline/screens/Extract.dart';
 import 'package:rifasonline/screens/Home.dart';
 import 'package:rifasonline/screens/SplashScreen.dart';
 import 'package:rifasonline/variaveis.dart';
@@ -21,7 +22,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/home',
       routes: {
         '/': (context) => SplashScreen(),
-        '/home': (context) => Home()
+        '/home': (context) => Home(),
+        '/extract': (context) => Extract(),
       },
     );
   }
