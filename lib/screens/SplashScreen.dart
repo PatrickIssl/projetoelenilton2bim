@@ -3,6 +3,7 @@ import 'package:rifasonline/variaveis.dart';
 import 'package:rifasonline/widgets/GradientText.dart';
 import 'package:rive/rive.dart' as Rive;
 
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 

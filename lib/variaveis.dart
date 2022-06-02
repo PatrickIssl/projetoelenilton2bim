@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter/widgets.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
+
 //Spash Screen
 var width;
 var height;
@@ -10,6 +14,7 @@ var corFonteGradienteUm = 0xFF928F8F;
 var corFonteGradienteDois = 0xFFFFFFFF;
 var corFontePretoSplashScreen = 0xFF000000;
 var corIcone = Colors.white70;
+var db;
 
 double getPosition(BuildContext context) {
   print(MediaQuery.of(context).orientation);
@@ -18,4 +23,36 @@ double getPosition(BuildContext context) {
   }else{
     return MediaQuery.of(context).size.height;
   }
+}
+
+var categorias = ["Alimentação","Casa","Educação","Impostos","Lazer","Pets","Saúde","Veiculo", "Outros"];
+
+
+
+
+criarDataBaseLocal() async{
+  final database = openDatabase(
+      join(await getDatabasesPath(), 'local.db'),
+      onCreate: (db, version) {
+  return db.execute(
+  'CREATE TABLE IF NOT EXISTS gastos(id INTEGER PRIMARY KEY, descricao TEXT, valor REAL,categoria TEXT, data TEXT )',
+  );
+  },
+  version: 1,
+  );
+
+
+  db = await openDatabase('local.db');
+}
+
+inserirDadosBanco(String descricao , double valor, String data) async {
+
+    int id1 = await db.rawInsert(
+        'INSERT INTO gastos(descricao, valor, data) VALUES(${descricao}, ${valor}, ${data})');
+    print('inserted1: $id1');
+}
+
+Future<List<Map<String, dynamic>>> buscarDadosBanco() async {
+  return await db.rawQuery('SELECT * FROM gastos');
+
 }

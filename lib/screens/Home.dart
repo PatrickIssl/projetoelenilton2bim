@@ -1,4 +1,6 @@
+import 'package:currency_text_input_formatter/currency_text_input_formatter.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:rifasonline/variaveis.dart';
 import 'package:rifasonline/widgets/NavDrawer.dart';
 
@@ -14,12 +16,23 @@ class _HomeState extends State<Home> {
   final _formKey = GlobalKey<FormState>();
   var _valorTotal = 0;
   var _name;
-  var _valor = 0;
+  var _valor;
+  var _dropdownValue = "Outros";
   bool isChecked = false;
 
 
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
+    criarDataBaseLocal();
+
+    dados() async{
+      await inserirDadosBanco("'teste'", 10.05, "'teste'");
+      List<Map<String, dynamic>> list = await buscarDadosBanco();
+      print(list);
+    }
+    dados();
+
     return Scaffold(
       drawer: NavDrawer(),
       appBar: AppBar(
@@ -34,8 +47,10 @@ class _HomeState extends State<Home> {
                 child:Column(
                   children: [
                     new SizedBox(height: height*0.05),
+                    Row(children: [
+                      Text("Descrição de gasto", style: TextStyle(fontSize: height*0.03 ),),
+                    ],),
                     TextFormField(
-                        decoration: new InputDecoration(hintText: 'Descrição de gasto'),
                         keyboardType: TextInputType.text,
                         maxLength: 100,
                         validator:(String? val){
@@ -47,21 +62,58 @@ class _HomeState extends State<Home> {
                         onSaved: (var val) {
                           _name = val;
                         }),
+                    Row(children: [
+                      Text("Valor", style: TextStyle(fontSize: height*0.03 ),),
+                    ],),
                     TextFormField(
-                        decoration: new InputDecoration(hintText: 'Valor'),
-                        keyboardType: TextInputType.number,
-                        maxLength: 100,
-                        validator:(String? val){
-                          if (val == 0) {
-                            return "Informe um valor positivo";
-                          } else {
-                            return null;
-                          }},
-                        onSaved: (var val) {
-                          _valor = int.parse(val!);
-                        }),
-
-
+                      initialValue: CurrencyTextInputFormatter( locale: 'pt-br',
+                        symbol: 'R\$ ',).format('0'),
+                      inputFormatters: [CurrencyTextInputFormatter(
+                        locale: 'pt-br',
+                        symbol: 'R\$ ',
+                      ),],
+                      keyboardType: TextInputType.number,
+                      maxLength: 100,
+                      validator:(String? val){
+                        if (val == 0) {
+                          return "Informe um valor positivo";
+                        } else {
+                          return null;
+                        }},
+                      onSaved: (var val) {
+                        _valor = double.parse(val!);
+                      },
+                    ),
+                    Row(children: [
+                      Text("Categoria", style: TextStyle(fontSize: height*0.03 ),),
+                    ],),
+                    Container(
+                        width: width,
+                        child: DropdownButton(
+                          value: _dropdownValue,
+                          icon: Icon(Icons.arrow_downward),
+                          iconSize: 24,
+                          elevation: 16,
+                          isExpanded: true,
+                          style: TextStyle(color: Color(verdeForte)),
+                          underline: Container(
+                            height: 2,
+                            color: Color(verdeForte),
+                          ),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              _dropdownValue = newValue!;
+                            });
+                          },
+                          items: categorias
+                              .map<DropdownMenuItem<String>>((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                        )
+                    ),
                         Row(
                           children: [
                             Text("Saida"),
@@ -95,7 +147,7 @@ class _HomeState extends State<Home> {
                         color: Color(corFontePretoSplashScreen),
                         fontSize: height*0.05
                     ),),
-                    Text("RS ${_valorTotal},00", style: TextStyle(
+                    Text("R\$ ${_valorTotal},00", style: TextStyle(
                       color: _valorTotal>0?Color(verdeForte):Color(vermelhoForte),
                       fontSize: height*0.05
                     ),),
