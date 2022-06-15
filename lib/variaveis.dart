@@ -15,6 +15,8 @@ var corFonteGradienteDois = 0xFFFFFFFF;
 var corFontePretoSplashScreen = 0xFF000000;
 var corIcone = Colors.white70;
 var db;
+List<Map<String, dynamic>> dadosDeGastos = [];
+double saldoTotal = 0.0;
 
 double getPosition(BuildContext context) {
   print(MediaQuery.of(context).orientation);
@@ -35,7 +37,7 @@ criarDataBaseLocal() async{
       join(await getDatabasesPath(), 'local.db'),
       onCreate: (db, version) {
   return db.execute(
-  'CREATE TABLE IF NOT EXISTS gastos(id INTEGER PRIMARY KEY, descricao TEXT, valor REAL,categoria TEXT, data TEXT )',
+  'CREATE TABLE IF NOT EXISTS gastos(id INTEGER PRIMARY KEY, descricao TEXT, valor REAL,categoria TEXT, data TEXT, isEntrada INTEGER )',
   );
   },
   version: 1,
@@ -45,10 +47,10 @@ criarDataBaseLocal() async{
   db = await openDatabase('local.db');
 }
 
-inserirDadosBanco(String descricao , double valor, String data) async {
+inserirDadosBanco(String descricao , double valor, String data, String categoria, bool isEntrada) async {
 
     int id1 = await db.rawInsert(
-        'INSERT INTO gastos(descricao, valor, data) VALUES(${descricao}, ${valor}, ${data})');
+        'INSERT INTO gastos(descricao, valor, data, categoria, isEntrada) VALUES(${descricao}, ${valor}, ${data}, ${categoria}, ${isEntrada == true?1:0})');
     print('inserted1: $id1');
 }
 
