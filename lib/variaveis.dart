@@ -34,27 +34,27 @@ var categorias = ["Alimentação","Casa","Educação","Impostos","Lazer","Pets",
 
 criarDataBaseLocal() async{
   final database = openDatabase(
-      join(await getDatabasesPath(), 'local.db'),
+      join(await getDatabasesPath(), 'baseLocal.db'),
       onCreate: (db, version) {
   return db.execute(
-  'CREATE TABLE IF NOT EXISTS gastos(id INTEGER PRIMARY KEY, descricao TEXT, valor REAL,categoria TEXT, data TEXT, isEntrada INTEGER )',
+  'CREATE TABLE IF NOT EXISTS local(id INTEGER PRIMARY KEY, descricao TEXT, valor REAL,categoria TEXT, month TEXT,year TEXT, isEntrada INTEGER )',
   );
   },
   version: 1,
   );
 
 
-  db = await openDatabase('local.db');
+  db = await openDatabase('baseLocal.db');
 }
 
-inserirDadosBanco(String descricao , double valor, String data, String categoria, bool isEntrada) async {
+inserirDadosBanco(String descricao , double valor, String month,String year, String categoria, bool isEntrada) async {
 
     int id1 = await db.rawInsert(
-        'INSERT INTO gastos(descricao, valor, data, categoria, isEntrada) VALUES(${descricao}, ${valor}, ${data}, ${categoria}, ${isEntrada == true?1:0})');
+        'INSERT INTO local(descricao, valor, month, year, categoria, isEntrada) VALUES(${descricao}, ${valor}, ${month}, ${year}, ${categoria}, ${isEntrada == true?1:0})');
     print('inserted1: $id1');
 }
 
 Future<List<Map<String, dynamic>>> buscarDadosBanco() async {
-  return await db.rawQuery('SELECT * FROM gastos');
+  return await db.rawQuery('SELECT * FROM local');
 
 }

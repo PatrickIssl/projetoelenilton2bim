@@ -24,10 +24,10 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     dados() async {
-        dadosDeGastos = await buscarDadosBanco();
+      dadosDeGastos = await buscarDadosBanco();
     }
 
-    calculoValorTotal() {
+    calculoValorTotal() async {
       saldoTotal = 0.0;
       dadosDeGastos.forEach((element) => {
             if (element["isEntrada"] == 1)
@@ -45,9 +45,16 @@ class _HomeState extends State<Home> {
           });
     }
 
-    criarDataBaseLocal();
-    dados();
-    calculoValorTotal();
+    iniciaBanco() async{
+      await criarDataBaseLocal();
+      await dados();
+      await calculoValorTotal();
+    }
+
+    iniciaBanco();
+    setState(() {
+      saldoTotal = saldoTotal;
+    });
 
     return Scaffold(
         drawer: NavDrawer(),
@@ -143,7 +150,9 @@ class _HomeState extends State<Home> {
                           color: Color(verdeForte),
                         ),
                         onChanged: (String? newValue) {
-                          _categoria = newValue!;
+                          setState(() {
+                            _categoria = newValue!;
+                          });
                         },
                         items: categorias
                             .map<DropdownMenuItem<String>>((String value) {
@@ -172,16 +181,16 @@ class _HomeState extends State<Home> {
                   RaisedButton(
                     color: Colors.green,
                     textColor: Colors.white,
-                    onPressed: () {
-                      setState(() {
-                        inserirDadosBanco(
-                            "'${_name}'",
-                            _valor,
-                            "'${DateTime.now().month.toString()}/${DateTime.now().year.toString()}'",
-                            "'${_categoria}'",
-                            isChecked);
-                        dados();
-                      });
+                    onPressed: () async {
+                      await inserirDadosBanco(
+                          "'${_name}'",
+                          _valor,
+                          "'${DateTime.now().month.toString()}'",
+                          "'${DateTime.now().year.toString()}'",
+                          "'${_categoria}'",
+                          isChecked);
+                      dados();
+                      setState(() {});
                       calculoValorTotal();
                     },
                     child: new Text('Adicionar'),
